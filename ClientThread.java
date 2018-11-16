@@ -1,6 +1,7 @@
 import java.io.*;
 import java.net.*;
 
+
 public class ClientThread extends Thread {
     protected Socket socket;
 
@@ -39,6 +40,7 @@ public class ClientThread extends Thread {
                     socket.close();
                     return;
                 } else {
+                	CommandParser.cmdParser(line);
                     out.writeBytes(line + "\n\r");
                     out.flush();
                 }
