@@ -19,7 +19,7 @@ public class MudServer {
             e.printStackTrace();
 
         }
-        maps.put(0, GameMap.getSampleMap(0));
+        maps.put(0, GameMap.getGameMapFromDB().get(1));
         int id = 0;
         
         while (true) {
@@ -31,7 +31,6 @@ public class MudServer {
             // new thread for a client
             new ClientThread(socket, maps, id % 2).start();
             id += 1;
-            
         }
     }
 }

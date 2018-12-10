@@ -1,7 +1,5 @@
 .idea/
 *.class
 Config/Configure.java
-
 razTest.java
-
 out/
