@@ -4,14 +4,21 @@ import java.net.*;
 import IO.CommandParser;
 import IO.IO;
 import Model.User;
+import Model.GameMap;
+import java.util.Map;
+
 
 public class ClientThread extends Thread {
     protected Socket socket;
     private User user;
     private String prompt = ">";
+    private Map<Integer, GameMap> maps;
+    private int id; // testing purpose
 
-    public ClientThread(Socket clientSocket) {
+    public ClientThread(Socket clientSocket, Map<Integer, GameMap> maps, int id) {
         this.socket = clientSocket;
+        this.maps = maps;
+        this.id = id;
     }
 
     public void run() {
@@ -31,18 +38,19 @@ public class ClientThread extends Thread {
             return;
         }
         String line;
-        user = User.getSampleUser();
-        IO.print(output, user.getMap().welcome());
+        user = User.getSampleUser(maps.get(0), id);
+        user.updateOutputStream(new IO(output));
+        user.print(user.getGameMap().welcome());
         
         while (true) {
             try {
-            	IO.print(output, prompt);
+            	user.print(prompt);
                 line = input.readLine();
                 if ((line == null) || line.equalsIgnoreCase("QUIT")) {
                     socket.close();
                     return;
                 } else {
-                	CommandParser.cmdParser(line, user, output);
+                	CommandParser.cmdParser(line, user);
                     output.flush();
                 }
             } catch (IOException e) {

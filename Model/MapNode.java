@@ -8,7 +8,10 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.io.DataOutputStream;
 
 
 
@@ -17,12 +20,14 @@ public class MapNode {
 	private Map<String, Integer> neighbors; // neighbor node id --> direction
 	private String name;
 	private String description;
+	private Set<User> users;
 
 	public MapNode(int id, Map<String, Integer> neighbors, String name, String des) {
 		this.id = id;
 		this.neighbors = neighbors;
 		this.name = name;
 		this.description = des;
+		this.users = new HashSet<>();
 	}
 	
 	public Map<String, Integer> getNeighbors() {
@@ -35,13 +40,36 @@ public class MapNode {
 	public String getName() {
 		return name;
 	}
+	
+	public synchronized void register(User user, String lastPositionName) {
+		//TODO: announce new user to other users
+		String info = " suddenly occurs";
+		if (lastPositionName != null) {
+			info = " comes from " + lastPositionName;
+		}
+		for(User u : users) {
+			u.print("\n" + user.getName() + info + ".\n");
+		}
+		users.add(user);
+		user.setPosition(this);
+	}
+	public synchronized void release(User user, String direction) {
+		//TODO: announce new user to other users
+		users.remove(user);
+		for(User u : users) {
+			u.print("\n" + user.getName() + " leaves " + name + " and goes to " + direction + ".\n");
+		}
+	}
 
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
-		sb.append(name).append("\n\n").append(description).append("\n\n");
+		sb.append("**").append(name).append("**\n").append(description).append("\n");
 		sb.append("Directions: ");
 		sb.append(String.join(", ", neighbors.keySet()));
-		sb.append("\n\n");
+		sb.append("\nPeople:\n");
+		for(User u : users) {
+			sb.append(u.getName()).append("\n");
+		}
 		return sb.toString();
 	}
 	
