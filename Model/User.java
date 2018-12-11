@@ -79,12 +79,16 @@ public class User {
 		return currentPosition.getId();
 	}
 
-	public synchronized void quitPrepare(Connection con) throws SQLException {
+	public synchronized void quit(Connection con) throws SQLException {
 		// release in curNode
-		currentPosition.releaseWithUserQuit(this);
-
+		currentPosition.release(this);
 		// store information update in DB
 		updateUser(con, this);
+	}
+	
+	public synchronized void quit() {
+		// release in curNode
+		currentPosition.release(this);
 	}
 
 	public static int createUser(Connection con, String un, String pw) throws SQLException {

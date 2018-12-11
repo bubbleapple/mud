@@ -61,7 +61,7 @@ public class MapNode {
 		}
 	}
 
-	public synchronized void releaseWithUserQuit(User user) {
+	public synchronized void release(User user) {
 		users.remove(user);
 		for(User u : users) {
 			u.print("\n" + user.getName() + " leaves game.\n");

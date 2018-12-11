@@ -45,22 +45,23 @@ public class ClientThread extends Thread {
         }
 
         // print welcome message
-        IO out = new IO(output);
-        out.print("Welcome to Mud Game <933 Adventure>! Please login or register[login/register]:");
+//        IO out = new IO(output);
+//        out.print("Welcome to Mud Game <933 Adventure>! Please login or register[login/register]:");
 
         // create a sql connection for this thread
         // TODO: this seems very vulnerable to DOS attack, maybe use a connection pool later
-        con = DBUtils.getNewConnection();
+//        con = DBUtils.getNewConnection();
 
         // login or register
-        user = new Auth(input, out, con).auth();
-        if(user == null) {
-            // System.out.println("User quit without login or register");
-            clientQuitPrepare();
-            return;
-        }
+//        user = new Auth(input, out, con).auth();
+        user = User.getSampleUser(maps.get(0), id);
+//        if(user == null) {
+//            // System.out.println("User quit without login or register");
+//            clientQuit();
+//            return;
+//        }
 
-        // user = User.getSampleUser(maps.get(0), id);
+         
         user.updateOutputStream(new IO(output));
         user.print(user.getGameMap().welcome());
 
@@ -70,7 +71,9 @@ public class ClientThread extends Thread {
             	user.print(prompt);
                 line = input.readLine();
                 if ((line == null) || line.equalsIgnoreCase("QUIT")) {
-                    clientQuitPrepare();
+//                    clientQuit();
+                	user.quit();
+                	socket.close();
                     return;
                 } else {
                 	CommandParser.cmdParser(line, user);
@@ -83,13 +86,13 @@ public class ClientThread extends Thread {
         }
     }
 
-    public void clientQuitPrepare() {
+    public void clientQuit() {
         try {
             // release user in node, store update in db
-            if(user != null) user.quitPrepare(con);
-
+            if(user != null) {
+            	user.quit(con);
+            }
             con.close();
-
             socket.close();
         } catch (IOException | SQLException e) {
             e.printStackTrace();
