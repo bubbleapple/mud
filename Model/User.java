@@ -7,37 +7,14 @@ import java.util.Map;
 
 import IO.IO;
 
-public class User {
-	private MapNode currentPosition;
-	private GameMap currentMap;
-	private String name;
+public class User extends Character {
 	private String password;
-	private int mapId;
-	private IO output;
-	private int id;
+
 	
 	public User(GameMap map, MapNode node, String n, String p, int id) {
-		currentPosition = node;
-		currentMap = map;
-		name = n;
+		super(map, node, n, id);
 		password = p;
-		node.register(this, null);
-		output = null;
-		this.id = id;
 	}
-
-	public synchronized MapNode getPosition() {
-		return currentPosition;
-	}
-	
-	public synchronized void setPosition(MapNode p) {
-		currentPosition = p;
-	}
-
-	public int getId() {
-		return this.id;
-	}
-
 	public static User getSampleUser(GameMap map, int id) {
 		if (id == 0)
 			return new User(map, map.getInitPosition(), "xiaoming", "abc", 1);
@@ -45,50 +22,11 @@ public class User {
 			return new User(map, map.getInitPosition(), "panghu", "abc", 2);
 	}
 
-	public String getName() {
-		return name;
-	}
-	public GameMap getGameMap() {
-		return currentMap;
-	}
-	public synchronized void updateOutputStream(IO output) {
-		this.output = output;
-	}
-	public synchronized boolean move(String direction) {
-		Map<String, Integer> nbrs = currentPosition.getNeighbors();
-		if (nbrs.containsKey(direction)) {
-			MapNode nextPosition = currentMap.getMap().get(nbrs.get(direction));
-			currentPosition.release(this, direction);
-			nextPosition.register(this, currentPosition.getName());
-			return true;
-		}
-		return false;
-	}
-
-	public void print(String s) {
-		output.print(s);
-	}
-
-	public int getCurMapId() {
-		if(currentMap == null) throw new NullPointerException("User don't have map instance");
-		return currentMap.getMapId();
-	}
-
-	public int getCurNodeId() {
-		if(currentPosition == null) throw new NullPointerException("User don't have node instance");
-		return currentPosition.getId();
-	}
-
 	public synchronized void quit(Connection con) throws SQLException {
 		// release in curNode
 		currentPosition.release(this);
 		// store information update in DB
 		updateUser(con, this);
-	}
-	
-	public synchronized void quit() {
-		// release in curNode
-		currentPosition.release(this);
 	}
 
 	public static int createUser(Connection con, String un, String pw) throws SQLException {

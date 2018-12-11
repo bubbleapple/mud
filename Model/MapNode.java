@@ -20,14 +20,14 @@ public class MapNode {
 	private Map<String, Integer> neighbors; // neighbor node id --> direction
 	private String name;
 	private String description;
-	private Set<User> users;
+	private Set<Character> characters;
 
 	public MapNode(int id, Map<String, Integer> neighbors, String name, String des) {
 		this.id = id;
 		this.neighbors = neighbors;
 		this.name = name;
 		this.description = des;
-		this.users = new HashSet<>();
+		this.characters = new HashSet<>();
 	}
 	
 	public Map<String, Integer> getNeighbors() {
@@ -41,30 +41,30 @@ public class MapNode {
 		return name;
 	}
 	
-	public synchronized void register(User user, String lastPositionName) {
+	public synchronized void register(Character user, String lastPositionName) {
 		//TODO: announce new user to other users
 		String info = " suddenly occurs";
 		if (lastPositionName != null) {
 			info = " comes from " + lastPositionName;
 		}
-		for(User u : users) {
-			u.print("\n" + user.getName() + info + ".\n");
+		for(Character c : characters) {
+			c.print("\n" + user.getName() + info + ".\n");
 		}
-		users.add(user);
+		characters.add(user);
 		user.setPosition(this);
 	}
-	public synchronized void release(User user, String direction) {
+	public synchronized void release(Character user, String direction) {
 		//TODO: announce new user to other users
-		users.remove(user);
-		for(User u : users) {
-			u.print("\n" + user.getName() + " leaves " + name + " and goes to " + direction + ".\n");
+		characters.remove(user);
+		for(Character c : characters) {
+			c.print("\n" + user.getName() + " leaves " + name + " and goes to " + direction + ".\n");
 		}
 	}
 
-	public synchronized void release(User user) {
-		users.remove(user);
-		for(User u : users) {
-			u.print("\n" + user.getName() + " leaves game.\n");
+	public synchronized void release(Character user) {
+		characters.remove(user);
+		for(Character c : characters) {
+			c.print("\n" + user.getName() + " leaves game.\n");
 		}
 	}
 
@@ -74,8 +74,8 @@ public class MapNode {
 		sb.append("Directions: ");
 		sb.append(String.join(", ", neighbors.keySet()));
 		sb.append("\nPeople:\n");
-		for(User u : users) {
-			sb.append(u.getName()).append("\n");
+		for(Character c : characters) {
+			sb.append(c.getName()).append("\n");
 		}
 		return sb.toString();
 	}
