@@ -61,6 +61,13 @@ public class MapNode {
 		}
 	}
 
+	public synchronized void releaseWithUserQuit(User user) {
+		users.remove(user);
+		for(User u : users) {
+			u.print("\n" + user.getName() + " leaves game.\n");
+		}
+	}
+
 	public String toString() {
 		StringBuilder sb = new StringBuilder();
 		sb.append("**").append(name).append("**\n").append(description).append("\n");

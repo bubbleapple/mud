@@ -1,6 +1,8 @@
 import java.io.*;
 import java.net.*;
 import Model.GameMap;
+import Model.Maps;
+
 import java.util.Map;
 import java.util.HashMap;
 
@@ -11,7 +13,7 @@ public class MudServer {
     public static void main(String args[]) {
         ServerSocket serverSocket = null;
         Socket socket = null;
-        Map<Integer, GameMap> maps = new HashMap<> ();
+        Map<Integer, GameMap> maps = Maps.getInstance().getMaps();
 
         try {
             serverSocket = new ServerSocket(PORT);
@@ -19,7 +21,6 @@ public class MudServer {
             e.printStackTrace();
 
         }
-        maps.put(0, GameMap.getGameMapFromDB().get(1));
         int id = 0;
         
         while (true) {

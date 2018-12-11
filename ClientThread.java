@@ -3,8 +3,13 @@ import java.net.*;
 
 import IO.CommandParser;
 import IO.IO;
+import IO.Auth;
 import Model.User;
 import Model.GameMap;
+import Utils.DB.DBUtils;
+
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
 
 
@@ -14,6 +19,7 @@ public class ClientThread extends Thread {
     private String prompt = ">";
     private Map<Integer, GameMap> maps;
     private int id; // testing purpose
+    private Connection con;
 
     public ClientThread(Socket clientSocket, Map<Integer, GameMap> maps, int id) {
         this.socket = clientSocket;
@@ -37,17 +43,34 @@ public class ClientThread extends Thread {
         	System.err.println("Unable to create input or output pipe(s).");
             return;
         }
-        String line;
-        user = User.getSampleUser(maps.get(0), id);
+
+        // print welcome message
+        IO out = new IO(output);
+        out.print("Welcome to Mud Game <933 Adventure>! Please login or register[login/register]:");
+
+        // create a sql connection for this thread
+        // TODO: this seems very vulnerable to DOS attack, maybe use a connection pool later
+        con = DBUtils.getNewConnection();
+
+        // login or register
+        user = new Auth(input, out, con).auth();
+        if(user == null) {
+            // System.out.println("User quit without login or register");
+            clientQuitPrepare();
+            return;
+        }
+
+        // user = User.getSampleUser(maps.get(0), id);
         user.updateOutputStream(new IO(output));
         user.print(user.getGameMap().welcome());
-        
+
+        String line;
         while (true) {
             try {
             	user.print(prompt);
                 line = input.readLine();
                 if ((line == null) || line.equalsIgnoreCase("QUIT")) {
-                    socket.close();
+                    clientQuitPrepare();
                     return;
                 } else {
                 	CommandParser.cmdParser(line, user);
@@ -57,6 +80,19 @@ public class ClientThread extends Thread {
                 e.printStackTrace();
                 return;
             }
+        }
+    }
+
+    public void clientQuitPrepare() {
+        try {
+            // release user in node, store update in db
+            user.quitPrepare(con);
+
+            con.close();
+
+            socket.close();
+        } catch (IOException | SQLException e) {
+            e.printStackTrace();
         }
     }
 }

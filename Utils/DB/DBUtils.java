@@ -27,9 +27,4 @@ public class DBUtils {
         }
         return connection;
     }
-
-    public static ResultSet execute(Connection con, String sql) throws SQLException {
-        Statement stmt = con.createStatement();
-        return stmt.executeQuery(sql);
-    }
 }
