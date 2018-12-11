@@ -86,7 +86,7 @@ public class ClientThread extends Thread {
     public void clientQuitPrepare() {
         try {
             // release user in node, store update in db
-            user.quitPrepare(con);
+            if(user != null) user.quitPrepare(con);
 
             con.close();
 
