@@ -20,14 +20,16 @@ public class MapNode {
 	private Map<String, Integer> neighbors; // neighbor node id --> direction
 	private String name;
 	private String description;
-	private Set<Character> characters;
+	private Set<User> users;
+	private Set<NPC> npcs;
 
 	public MapNode(int id, Map<String, Integer> neighbors, String name, String des) {
 		this.id = id;
 		this.neighbors = neighbors;
 		this.name = name;
 		this.description = des;
-		this.characters = new HashSet<>();
+		this.users = new HashSet<>();
+		this.npcs = new HashSet<>();
 	}
 	
 	public Map<String, Integer> getNeighbors() {
@@ -41,29 +43,51 @@ public class MapNode {
 		return name;
 	}
 	
-	public synchronized void register(Character user, String lastPositionName) {
+	public synchronized void register(User user, String lastPositionName) {
 		//TODO: announce new user to other users
 		String info = " suddenly occurs";
 		if (lastPositionName != null) {
 			info = " comes from " + lastPositionName;
 		}
-		for(Character c : characters) {
+		for(Character c : users) {
 			c.print("\n" + user.getName() + info + ".\n");
 		}
-		characters.add(user);
+		users.add(user);
 		user.setPosition(this);
 	}
-	public synchronized void release(Character user, String direction) {
+	
+	public synchronized void register(NPC npc, String lastPositionName) {
 		//TODO: announce new user to other users
-		characters.remove(user);
-		for(Character c : characters) {
+		String info = " suddenly occurs";
+		if (lastPositionName != null) {
+			info = " comes from " + lastPositionName;
+		}
+		for(User c : users) {
+			c.print("\n" + npc.getName() + info + ".\n");
+		}
+		npcs.add(npc);
+		npc.setPosition(this);
+	}
+	
+	public synchronized void release(User user, String direction) {
+		//TODO: announce new user to other users
+		users.remove(user);
+		for(User c : users) {
 			c.print("\n" + user.getName() + " leaves " + name + " and goes to " + direction + ".\n");
 		}
 	}
 
-	public synchronized void release(Character user) {
-		characters.remove(user);
-		for(Character c : characters) {
+	public synchronized void release(NPC npc, String direction) {
+		//TODO: announce new user to other users
+		npcs.remove(npc);
+		for(User c : users) {
+			c.print("\n" + npc.getName() + " leaves " + name + " and goes to " + direction + ".\n");
+		}
+	}
+
+	public synchronized void release(User user) {
+		users.remove(user);
+		for(Character c : users) {
 			c.print("\n" + user.getName() + " leaves game.\n");
 		}
 	}
@@ -74,7 +98,10 @@ public class MapNode {
 		sb.append("Directions: ");
 		sb.append(String.join(", ", neighbors.keySet()));
 		sb.append("\nPeople:\n");
-		for(Character c : characters) {
+		for(User u : users) {
+			sb.append(u.getName()).append("\n");
+		}
+		for(NPC c : npcs) {
 			sb.append(c.getName()).append("\n");
 		}
 		return sb.toString();

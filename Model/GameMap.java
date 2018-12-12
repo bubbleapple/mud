@@ -1,19 +1,18 @@
 package Model;
 
 
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import Model.NPC;
 
 public class GameMap {
 	private Map<Integer, MapNode> map;
 	private int initial_position;
 	private String welcomeMessage;
 	private int id;
-	
-	public GameMap() {
-		map = null;
-		initial_position = -1;
-	}
+	private Set<NPC> npcs;
 
 	public GameMap(int[] nodesIds, String[] names, String[] descriptions, 
 				   MapConnection[] cons, int init, String welcomeMessage,
@@ -31,6 +30,7 @@ public class GameMap {
 		initial_position = init;
 		this.welcomeMessage = welcomeMessage;
 		this.id = mapId;
+		npcs = NPC.createSampleNPCs(this);
 	}
 
 	/**
@@ -72,4 +72,11 @@ public class GameMap {
 		if(map.containsKey(id)) return map.get(id);
 		throw new NullPointerException("Game map not contains that node id");
 	}
+	
+	public void launchNPCs(Socket socket) {
+		for (NPC npc : npcs) {
+			npc.activate(socket);
+		}
+	}
+
 }

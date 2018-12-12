@@ -13,6 +13,7 @@ public class User extends Character {
 	
 	public User(GameMap map, MapNode node, String n, String p, int id) {
 		super(map, node, n, id);
+		node.register(this, null);
 		password = p;
 	}
 	public static User getSampleUser(GameMap map, int id) {
@@ -27,6 +28,21 @@ public class User extends Character {
 		currentPosition.release(this);
 		// store information update in DB
 		updateUser(con, this);
+	}
+	public synchronized boolean move(String direction) {
+		Map<String, Integer> nbrs = currentPosition.getNeighbors();
+		if (nbrs.containsKey(direction)) {
+			MapNode nextPosition = currentMap.getMap().get(nbrs.get(direction));
+			currentPosition.release(this, direction);
+			nextPosition.register(this, currentPosition.getName());
+			return true;
+		}
+		return false;
+	}
+	
+	public synchronized void quit() {
+		// release in curNode
+		currentPosition.release(this);
 	}
 
 	public static int createUser(Connection con, String un, String pw) throws SQLException {

@@ -24,6 +24,9 @@ public class MudServer {
         while (true) {
             try {
                 socket = serverSocket.accept();
+                for (GameMap map : maps.values()) {
+                	map.launchNPCs(socket);
+                }
             } catch (IOException e) {
                 System.out.println("I/O error: " + e);
             }

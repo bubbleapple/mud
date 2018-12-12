@@ -22,7 +22,6 @@ public class Character {
 		currentPosition = node;
 		currentMap = map;
 		name = n;
-		node.register(this, null);
 		output = null;
 		this.id = id;
 	}
@@ -48,16 +47,7 @@ public class Character {
 	public synchronized void updateOutputStream(IO output) {
 		this.output = output;
 	}
-	public synchronized boolean move(String direction) {
-		Map<String, Integer> nbrs = currentPosition.getNeighbors();
-		if (nbrs.containsKey(direction)) {
-			MapNode nextPosition = currentMap.getMap().get(nbrs.get(direction));
-			currentPosition.release(this, direction);
-			nextPosition.register(this, currentPosition.getName());
-			return true;
-		}
-		return false;
-	}
+
 
 	public void print(String s) {
 		output.print(s);
@@ -73,8 +63,5 @@ public class Character {
 		return currentPosition.getId();
 	}
 
-	public synchronized void quit() {
-		// release in curNode
-		currentPosition.release(this);
-	}
+
 }
