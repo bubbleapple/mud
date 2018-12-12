@@ -49,7 +49,7 @@ public class MapNode {
 		if (lastPositionName != null) {
 			info = " comes from " + lastPositionName;
 		}
-		for(Character c : users) {
+		for(Figure c : users) {
 			c.print("\n" + user.getName() + info + ".\n");
 		}
 		users.add(user);
@@ -87,7 +87,7 @@ public class MapNode {
 
 	public synchronized void release(User user) {
 		users.remove(user);
-		for(Character c : users) {
+		for(Figure c : users) {
 			c.print("\n" + user.getName() + " leaves game.\n");
 		}
 	}

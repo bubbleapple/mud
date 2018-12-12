@@ -7,7 +7,7 @@ import java.util.Map;
 
 import IO.IO;
 
-public class User extends Character {
+public class User extends Figure {
 	private String password;
 
 	

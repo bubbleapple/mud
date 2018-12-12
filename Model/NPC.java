@@ -53,7 +53,7 @@ class NPCThread extends Thread {
 
 
 
-public class NPC extends Character {
+public class NPC extends Figure {
 	public NPC(GameMap map, MapNode node, String n, int id) {
 		super(map, node, n, id);
 		node.register(this, null);

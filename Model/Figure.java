@@ -10,7 +10,7 @@ import java.util.Map;
 
 import IO.IO;
 
-public class Character {
+public class Figure {
 	protected MapNode currentPosition;
 	protected GameMap currentMap;
 	protected String name;
@@ -18,7 +18,7 @@ public class Character {
 	protected IO output;
 	protected int id;
 	
-	public Character(GameMap map, MapNode node, String n, int id) {
+	public Figure(GameMap map, MapNode node, String n, int id) {
 		currentPosition = node;
 		currentMap = map;
 		name = n;
